@@ -10,7 +10,6 @@ CCelestialObject::CCelestialObject( CPoint centre, CPoint force, double mass):
     force( force ),
     mass( mass ) {}
 
-// might be wrong?? :)
 glm::mat4 CCelestialObject::updatePosition(CPoint gravityForce, const size_t timeStep ) {
     glm::vec3 initialPos = {this->centre.posX, this->centre.posY, this->centre.posZ};
 

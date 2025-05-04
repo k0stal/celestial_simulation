@@ -1,6 +1,6 @@
 #include "simulation.h"
 
-constexpr size_t SIM_OBJ_NR = 100;
+constexpr size_t SIM_OBJ_NR = 75;
 
 int main(int argc, char *argv[]) {
     CSimulation simulation;

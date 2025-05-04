@@ -15,6 +15,7 @@
 #include "octTreeNode.h"
 
 #include <vector>
+#include <map>
 #include <stdexcept>
 #include <chrono>
 #include <thread>
@@ -24,9 +25,10 @@
 #include <sstream>
 #include <iostream>
 
-// move to config?
+// Constants
 constexpr size_t SPACE_SIZE = 2;
 constexpr size_t TIME_STEP = 1;
+constexpr size_t MAX_TRAIL_SIZE = 50;
 
 const glm::mat4 viewMatrix = glm::lookAt(
     glm::vec3(3.0f, 3.0f, 3.0f),
@@ -34,43 +36,64 @@ const glm::mat4 viewMatrix = glm::lookAt(
     glm::vec3(0.0f, 0.0f, 1.0f)
 );
 
+/**
+ * @class CSimulation
+ * @brief Manages the full celestial object simulation, rendering, and interaction.
+ */
 class CSimulation {
-    public:
-        CSimulation(void);
-        ~CSimulation();
-        void addCelestialObject(std::shared_ptr<CCelestialObject> object);
-        void generateRandomObjects(const size_t count);
-        void runSimulation(void);
+public:
+    /**
+     * @brief Constructor.
+     */
+    CSimulation(void);
 
-    private:
-        void sdlSetup(void);
-        std::string loadShaderSource(const std::string& filePath);
-        void shaderCompilationStatus(GLuint shader);
-        void initAndBindEBO(void);
+    /**
+     * @brief Destructor.
+     */
+    ~CSimulation();
 
-        // Merge color and position buffer
-        void initVBO(void);
-        void createProgram(void);
+    /**
+     * @brief Adds a celestial object to the simulation.
+     * @param object Shared pointer to a celestial object.
+     */
+    void addCelestialObject(std::shared_ptr<CCelestialObject> object);
 
-        glm::vec3 generateRandomColor(size_t seed);
-        void generateVerticesBuffer(std::vector<GLfloat>& verticesBuffer);
+    /**
+     * @brief Generates random celestial objects.
+     * @param count Number of objects to generate.
+     */
+    void generateRandomObjects(const size_t count);
 
-        void calcNewVerticesPos(void);
+    /**
+     * @brief Runs the main simulation loop.
+     */
+    void runSimulation(void);
 
-        std::vector<std::shared_ptr<CCelestialObject>> objects;
-        glm::mat4 view;
+private:
+    void sdlSetup(void);
+    std::string loadShaderSource(const std::string& filePath);
+    void shaderCompilationStatus(GLuint shader);
+    void initAndBindEBO(void);
+    void initVBO(void);
+    void createProgram(void);
+    glm::vec3 generateRandomColor(size_t seed);
+    void generateVerticesBuffer(std::vector<GLfloat>& verticesBuffer);
+    void calcNewVerticesPos(void);
+    void renderTrails(void);
 
-        SDL_GLContext context;
-        SDL_Window* window;
+    std::vector<std::shared_ptr<CCelestialObject>> objects;
+    glm::mat4 view;
+    SDL_GLContext context;
+    SDL_Window* window;
 
-        GLuint shaderProgram;
+    GLuint shaderProgram;
+    std::vector<glm::vec4> verticesPos;
+    std::vector<GLfloat> colorBuffer;
+    std::vector<GLuint> indicesBuffer;
+    std::vector<int> objectVector;
+    std::vector<glm::mat4> models;
+    std::vector<std::vector<glm::vec3>> orbitTrails;
 
-        std::vector<glm::vec4> verticesPos;
-        std::vector<GLfloat> colorBuffer;
-        std::vector<GLuint> indicesBuffer;
-        std::vector<int> objectVector;
-        std::vector<glm::mat4> models;
-
-        GLuint vao;
-        GLuint ebo;
+    GLuint vao;
+    GLuint ebo;
 };

@@ -11,6 +11,7 @@ CSimulation::CSimulation(void):
     indicesBuffer(),
     objectVector(),
     models(),
+    orbitTrails(),
     vao(),
     ebo() {
         // window setup
@@ -95,17 +96,6 @@ void CSimulation::runSimulation(void) {
 
     createProgram();
 
-    // // Specify the layout of the vertex data
-    // GLint posAttrib = glGetAttribLocation(shaderProgram, "position");
-    // glEnableVertexAttribArray(posAttrib);
-    // glVertexAttribPointer(posAttrib, 3, GL_FLOAT, GL_FALSE, 6 * sizeof(GLfloat), 0);
-
-    // GLint colAttrib = glGetAttribLocation(shaderProgram, "color");
-    // glEnableVertexAttribArray(colAttrib);
-    // glVertexAttribPointer(colAttrib, 3, GL_FLOAT, GL_FALSE, 6 * sizeof(GLfloat), (void*)(3 * sizeof(GLfloat)));
-
-    // GLint uniModel = glGetUniformLocation(shaderProgram, "model");
-
     GLint uniView = glGetUniformLocation(this->shaderProgram, "view");
     glUniformMatrix4fv(uniView, 1, GL_FALSE, glm::value_ptr(this->view));
 
@@ -122,7 +112,7 @@ void CSimulation::runSimulation(void) {
             if (windowEvent.type == SDL_QUIT) break;
         }
 
-        /// FIX THIS
+        // tmp
         std::this_thread::sleep_for(std::chrono::milliseconds(20));
 
         glClearColor(0.0f, 0.0f, 0.0f, 1.0f);
@@ -135,6 +125,10 @@ void CSimulation::runSimulation(void) {
 
         if (this->models.size() == this->objects.size())
             calcNewVerticesPos();
+
+        renderTrails();
+
+        glBindVertexArray(this->vao); 
 
         generateVerticesBuffer(verticesBuffer);
 
@@ -235,10 +229,23 @@ void CSimulation::calcNewVerticesPos(void) {
         glm::vec4 currPos = this->verticesPos[i];
         int objectID = this->objectVector[i];
         glm::mat4 currModel = this->models[objectID];
-        newPos.push_back(currModel * currPos);
+        glm::vec4 newPlanetPosition = currModel * currPos;
+        newPos.push_back(newPlanetPosition);
+    
     }
     this->verticesPos = newPos;
     this->models.clear();
+ 
+    for (int i = 0; i < this->objects.size(); i++ ) {
+        if (this->orbitTrails.size() <= i)
+            this->orbitTrails.push_back(std::vector<glm::vec3>{});
+        this->orbitTrails[i].emplace_back(this->objects[i]->centre.posX,
+                                          this->objects[i]->centre.posY,
+                                          this->objects[i]->centre.posZ);
+        
+        if (this->orbitTrails[i].size() > MAX_TRAIL_SIZE)
+            this->orbitTrails[i].erase(orbitTrails[i].begin());
+    }
 }
 
 void CSimulation::generateVerticesBuffer(std::vector<GLfloat>& verticesBuffer) {
@@ -260,4 +267,46 @@ std::string CSimulation::loadShaderSource(const std::string& filePath) {
     std::stringstream buffer;
     buffer << file.rdbuf();
     return buffer.str();
+}
+
+void CSimulation::renderTrails() {
+
+    GLuint orbitVBO, orbitVAO;
+
+    glGenVertexArrays(1, &orbitVAO);
+    glGenBuffers(1, &orbitVBO);
+
+    glBindVertexArray(orbitVAO);
+
+    for (const auto& trail : this->orbitTrails) {
+        if (trail.size() < 2) 
+            continue;
+
+        std::vector<GLfloat> orbitVerticesBuffer;
+
+        for (const auto& pos : trail) {
+            orbitVerticesBuffer.push_back(pos.x);
+            orbitVerticesBuffer.push_back(pos.y);
+            orbitVerticesBuffer.push_back(pos.z);
+
+            orbitVerticesBuffer.push_back(0.8f);
+            orbitVerticesBuffer.push_back(0.8f);
+            orbitVerticesBuffer.push_back(0.8f);
+        }
+
+        glBindBuffer(GL_ARRAY_BUFFER, orbitVBO);
+        glBufferData(GL_ARRAY_BUFFER, orbitVerticesBuffer.size() * sizeof(GLfloat), orbitVerticesBuffer.data(), GL_DYNAMIC_DRAW);
+
+        glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, 6 * sizeof(GLfloat), (void*)0);
+        glEnableVertexAttribArray(0);
+
+        glVertexAttribPointer(1, 3, GL_FLOAT, GL_FALSE, 6 * sizeof(GLfloat), (void*)(3 * sizeof(GLfloat)));
+        glEnableVertexAttribArray(1);
+
+        glDrawArrays(GL_LINE_STRIP, 0, trail.size());
+
+        glBindBuffer(GL_ARRAY_BUFFER, 0);
+    }
+
+    glBindVertexArray(0);
 }

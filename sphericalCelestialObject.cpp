@@ -36,14 +36,12 @@ void CSphericalCelestialObject::generateObjectIndices(int size, std::vector<GLui
         int k2 = k1 + this->sectors + 1;
 
         for (int j = 0; j < this->sectors; ++j, ++k1, ++k2) {
-            // First triangle
             if (i != 0) {
                 indices.push_back(k1 + size);
                 indices.push_back(k2 + size);
                 indices.push_back(k1 + 1 + size);
             }
 
-            // Second triangle
             if (i != (this->stacks - 1)) {
                 indices.push_back(k1 + 1 + size);
                 indices.push_back(k2 + size);

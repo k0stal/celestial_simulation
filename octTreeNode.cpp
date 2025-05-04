@@ -82,7 +82,7 @@ void COctTreeNode::calculateStep(std::vector<std::shared_ptr<CCelestialObject>>&
     }
 }
 
-// Refract this
+// Refract
 CPoint COctTreeNode::calculateForce(std::shared_ptr<CCelestialObject> object) {
     CPoint force;
     if ( this->totalMass == 0 )
