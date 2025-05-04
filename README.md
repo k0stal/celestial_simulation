@@ -4,10 +4,11 @@ Simple C++ OpenGL simulation of celestial bodies (stars, planets, moons) interac
 
 ## Simulation
 
-<video width="640" height="500" controls autoplay loop muted>
-  <source src="https://github.com/user-attachments/assets/b84b0a9c-08ad-47d0-b32b-5349a5838852" type="video/mp4">
-  Your browser does not support the video tag.
-</video>
+<div align="center">
+  
+https://github.com/user-attachments/assets/c9cd73e9-39eb-4aca-9c9a-dddd69540fac
+
+</div>
 
 ## Dependencies
 
@@ -20,4 +21,4 @@ Simple C++ OpenGL simulation of celestial bodies (stars, planets, moons) interac
 
 - [ ] Merge color and position buffer
 - [ ] Celestial object texturing
-- [ ] Parallel calculation of BH alg
+- [ ] Parallel calculation of bh alg
