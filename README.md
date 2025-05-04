@@ -1,6 +1,6 @@
 # Celestial Simulation
 
-Simple C++ OpenGL simulation of celestial bodies (stars, planets, moons) interacting under gravity in 3D space. The simulation uses 3D Barnes-Hut for efficient force calculations.
+Simple C++ OpenGL simulation of celestial bodies (stars, planets, moons) interacting under gravity in 3D space. The simulation uses 3D Barnes-Hut algorithm for efficient calculations.
 
 ## Simulation
 
