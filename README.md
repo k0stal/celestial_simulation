@@ -1,9 +1,16 @@
-TODO:
+# Celestial Simulation
 
-1) unify vertex buffers
-2) use one VBO
-    - merge ColorVbo and PositionVbo
-    - swap the content
-    - glBufferData(...),  GL_STREAM_DRAW
-3) add Light source
-4) textures
+This is a C++ OpenGL project that simulates celestial bodies (stars, planets, moons) interacting under gravity in 3D space. The simulation uses 3D Barnes-Hut for efficient force calculations and displays the movement of objects.
+
+## Dependencies
+
+- OpenGL
+- GLEW
+- SDL2
+- GLM
+
+## Todo
+
+- Merge color and position buffer
+- Celestial object texturing
+- Parallel calculation of BH alg
